@@ -1,0 +1,486 @@
+{% extends 'quiz/base.html'%}
+
+ 
+ 
+    
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+
+    body,
+    html {
+        height: 100%;
+        float: center;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
+    }
+    div.background {
+        filter: blur(4px);
+        height: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: -10px;
+        width: calc(100% + 20px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('/static/images/bg-01.jpg');
+        
+    }
+
+    div.background::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+
+        
+    }
+
+    div.content {
+        border: 5px solid white;
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+        padding: 25px;
+        width: 1000px;
+        height:450px;
+        
+    }
+
+    div.question {
+        margin-left: 25px;
+    }
+
+     
+
+    label {
+        margin-left: 10px;
+    }
+
+    button {
+        margin: 30px 10px;
+        width: 200px;
+        padding: 12px;
+        font-size: 15px;
+        background-color: transparent;
+        color: white;
+        border: 1.5px white solid;
+        transition: 0.1s linear;
+    }
+
+    button:hover {
+        color: black;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    div.question {
+        margin-left: 25px;
+        float: none;
+        clear: none;
+       
+       
+    }
+    
+
+    div.buttons {
+    
+        text-align: center;
+         
+    }
+
+     label {
+      float: left;
+      clear: none;
+      font-size: 16px;
+      display: block;
+      padding: 0px 1em 0px 8px;
+    }
+    
+    input[type=radio],
+    input.radio {
+      float: left;
+      clear: none;
+      margin: 2px 0 0 2px;
+    }
+
+
+    .radiobuttons{
+        padding-top: 10px;
+
+    }
+
+
+    #quiz_timer_label{
+        position: absolute;
+        top: 10px;
+        right: 0;
+        width: 150px;
+        height: 130px;
+        padding: 35px 25px;
+        font-size: 20px;
+        text-align: center;
+    }
+
+    div.no_and_marks{
+        float: none;
+        
+       
+    }
+
+    div.question_number{
+        width: 80%;
+        float: left;
+    }
+
+    div.question_marks{
+        width:20%;
+        float: right;
+        margin-top: 40px;
+        margin-bottom: 50px ;
+    }
+
+    div.end_quiz{
+        position: absolute;
+        top: 0px;
+        left: 0;
+        width: 150px;
+        height: 130px;
+       
+        font-size: 20px;
+        text-align: center;
+
+    }
+
+
+     
+
+
+     
+
+    
+   
+     
+    
+     
+   
+</style>
+ 
+ 
+
+
+<script type="text/javascript">
+
+    //wait till out jQuery is loaded.
+
+
+    document.getElementById('id_body').onload = function() {defer()};
+    function defer()
+    {
+        if (window.jQuery)
+        {
+        startTimer()
+        get_question()
+        }
+      else
+        setTimeout(function() { defer() }, 20);
+    }
+
+function startTimer()
+    {
+        var timer2 = "10:10";
+var interval = setInterval(function() {
+
+
+  var timer = timer2.split(':');
+  //by parsing integer, I avoid all extra string processing
+  var minutes = parseInt(timer[0], 10);
+   
+  var seconds = parseInt(timer[1], 10);
+  if (minutes==0 && seconds== 0)
+  {
+      window.location.href='/thanks'
+  }
+  
+  --seconds;
+  minutes = (seconds < 0) ? --minutes : minutes;
+  if (minutes < 0) clearInterval(interval);
+  seconds = (seconds < 0) ? 59 : seconds;
+  seconds = (seconds < 10) ? '0' + seconds : seconds;
+  //minutes = (minutes < 10) ?  minutes : minutes;
+  $('#timer').html(minutes + 'M : ' + seconds+'S');
+  timer2 = minutes + ':' + seconds;
+}, 1000);
+
+    }
+
+           
+    
+    var count=11;
+ 
+
+    function get_question(value=1)
+    {
+        id = parseInt(document.getElementById('quest_id').value);
+        if (value==1 && id!=count)
+        {
+            id=id+1;
+            document.getElementById('quest_id').value=id;
+            
+        }
+        else if(value==-1 && id!=1)
+        {
+            id=id-1;
+            document.getElementById('quest_id').value=id;
+             
+        }
+        else
+        {
+            id=id;
+        }
+        
+        
+     
+        
+       
+     
+       $.ajax({
+           type : 'POST',
+           url : "{% url 'quiz_questions' %}",
+           beforeSend: function(xhr) {
+            xhr.setRequestHeader('X-CSRFTOKEN', '{{csrf_token}}');   
+        },
+           data:
+           {
+               'quest_id':id,
+
+               
+           },
+           success:function(reponse){
+             
+               //handling the reponse 
+               
+               instance = JSON.parse(reponse["instance"]); 
+               question = JSON.parse(reponse['question']);
+              // user_ans = JSON.parse(reponse['user_ans']);
+
+                
+               
+               var fields = instance[0]["fields"];  
+               var quest_fields = question[0]["fields"];
+               var user_ans = reponse.user_ans;
+
+                
+               set_question(fields,quest_fields,user_ans);
+              
+           },
+           error:function(reponse)
+           {
+            alert(reponse.error);
+           },
+
+
+
+       })
+    
+        
+       
+    }
+    
+   
+    
+
+    function set_question(fields,quest_fields,user_ans)
+    {
+     
+        $('#question_marks').text(fields.quest_marks)
+        $('#question_number').text(fields.question);    //sets the id now
+        $('#question').text(quest_fields.quest_statement);
+        $('label[for=option_a]').text(fields.option_a)
+        $('label[for=option_b]').text(fields.option_b)
+        $('label[for=option_c]').text(fields.option_c)
+        $('label[for=option_d]').text(fields.option_d)
+
+        if(user_ans.attempted)
+        {
+            console.log(typeof(user_ans.option_selected))
+            if(user_ans.option_selected=="a")
+            {
+                $('.option_a').prop("checked",true);
+            }
+            if(user_ans.option_selected=="b")
+            {
+                $('.option_b').prop("checked",true);
+            }
+            if(user_ans.option_selected=="c")
+            {
+                $('.option_c').prop("checked",true);
+            }
+            if(user_ans.option_selected=="d")
+            {
+                $('.option_d').prop("checked",true);
+            }
+        }
+        else{
+            $('.option_a').prop("checked",true);
+
+        }
+        
+
+    }
+
+    function end_quiz()
+    {
+        window.location.href = '/thanks';
+    }
+
+
+</script>
+
+<script>
+    function submit_question(event)
+   
+    {
+    event.preventDefault()
+        
+     //takes care of checking the answer
+     selected_option=$('input[name=question-1-answers]:checked').val();   //gets the checed radio button
+     current_question_id = parseInt(document.getElementById('quest_id').value);
+     
+ 
+     //sending this info to server
+     $.ajax({
+         type : 'POST',
+         url : "{% url 'check_questions' %}",
+         beforeSend: function(xhr) {
+          xhr.setRequestHeader('X-CSRFTOKEN', '{{csrf_token}}');   
+      },
+         data:
+         {
+             'selected_option':selected_option,
+             'current_question_id':current_question_id
+ 
+             
+         },
+         success:function(reponse){
+            
+             //handling the reponse 
+            instance = JSON.parse(reponse["ans_instance"]); 
+            question = JSON.parse(reponse['quest_instance']);
+            var user_ans = reponse.user_ans;
+            
+            var fields = instance[0]["fields"];  
+            var quest_fields = question[0]["fields"];
+            document.getElementById('quest_id').value=fields.question
+            set_question(fields,quest_fields,user_ans) 
+         },
+         error:function(reponse)
+         {
+          alert(reponse.error);
+         },
+ 
+ 
+ 
+     })
+ };
+      
+ </script>
+
+ 
+<!--A form for Question Loading and rettutning ans-->
+<div class="background"></div>
+
+<div class="content">
+    <div class="question">
+       <form id="quiz_form" method="POST">
+          {% csrf_token %}
+    <div class="no_and_marks">
+             <div class="question_number">
+                     <button type="button" class="btn btn-primary">
+                     Question <span class="badge badge-light" id="question_number">4</span>
+                     </button>
+          
+             </div>   
+             
+             <div class="question_marks">
+                 Marks: 
+                 <span class="badge badge-light" id="question_marks">1</span>
+                  
+            </div>
+    </div>
+        
+          
+          <h4 id="question">What is full form of CSS ?</h4>
+            
+        
+         
+            <input type="text" name ="id" value="0" id="quest_id" hidden>
+          
+            <div class="radiobuttons">
+            <input type="radio" name="question-1-answers" class="option_a" value="A" checked />
+            <label for="option_a">  Computer Styled Sections </label><br>
+             </div>
+     
+             <div class="radiobuttons">
+            <input type="radio" name="question-1-answers" class="option_b" value="B" />
+            <label for="option_b"> Computer Styled Sections </label><br>
+             </div>
+      
+             <div class="radiobuttons">
+            <input type="radio" name="question-1-answers" class="option_c" value="C" />
+            <label for="option_c">  Computer Styled Sections </label><br>
+             </div>
+
+             <div class="radiobuttons">
+            <input type="radio" name="question-1-answers" class="option_d" value="D" />
+            <label for="option_d">  Computer Styled Sections </label><br>
+            </div>
+        </form>
+    </div>
+   
+           
+        <div class="buttons">
+            <button   onclick="get_question(-1)"  value="previous">PREVIOUS</button>
+            <button type="submit" onclick="submit_question(event)"   value="Submit">SUBMIT</button>
+            <button   onclick="get_question(1)"   value="Next">NEXT</button>
+        </div>
+</div>
+    
+
+    <div id="quiz_timer_label">
+        Time Left:
+        <div id="timer">
+            30m 00s
+        </div>
+    </div>
+
+    <div class="end_quiz">
+        <button class = "btn btn-danger" onclick = "end_quiz()" value="previous">END QUIZ</button>
+
+        </div>
+ 
+         
+     
+     
+    
+   
+   
+    
+   
+
+ 
+
+ 
+ 
+ 
+{% endblock content %}
+
+ 
+ 
+

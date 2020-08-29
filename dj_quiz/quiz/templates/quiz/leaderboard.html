@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+</head>
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+
+    body,
+    html {
+        height: 100%;
+        text-align: center;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
+    }
+
+    * {
+        margin: 0;
+        box-sizing: border-box;
+
+    }
+
+    div.background {
+        filter: blur(4px);
+        height: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: -10px;
+        width: calc(100% + 20px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('/static/images/bg-01.jpg')
+        /*
+        https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80
+        */
+    }
+
+    div.background::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    div.content {
+        width: 80%;
+        height: 80%;
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+
+    div.table {
+        height: 80%;
+        overflow-y: auto;
+    }
+
+    table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        width: 100%;
+        border: 1px solid #ddd;
+    }
+
+    button {
+       
+        
+        padding: 12px;
+        font-size: 15px;
+        background-color: blue;
+        color: white;
+        border: 1.5px white solid;
+        transition: 0.1s linear;
+    }
+
+    button:hover {
+        color: white;
+        background-color: black;
+        cursor: pointer;
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 8px;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+        color: black;
+    }
+</style>
+
+<body>
+    <div class="background"></div>
+    <div class="content">
+        <h1>Leaderboard</h1>
+        <br><br>
+        <div class="table">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Phone No.</th>
+                    <th>College Name</th>
+                    <th>Score</th>
+                 </tr>
+                {% for row in list %}
+                 
+                <tr>
+                    <td>{{ row.user.username }}</td>
+                    <td>{{ row.user.participant.phone_no }}</td>
+                    <td>{{ row.user.participant.college_name }}</td>
+                    <td>{{ row.user_quiz_score }}</td>
+                 
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+</head>
+    <!-- Bootstrap CSS and MAIN CSS -->
+    <link rel="stylesheet" href="{% static 'css/bootstap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+     
+</head>
+ 
+<body id="id_body">
+
+    {%block content%}
+    {% endblock content %}
+   
+
+    <!--  JQUERY CDN -->
+     
+    <script src="{% static 'js/jquery.js'%}"></script>
+  
+ 
+     
+</body>
+</html>
+
+<!--
+  <div class='quiz_timer'>
+    <h5>Time left:</h5>
+    <div id="quiz_timer_label">
+      <h4>
+      30:00
+      </h4>
+    </div>  
+    </div>
+-->

@@ -1,0 +1,174 @@
+{% extends 'quiz/base.html'%}
+{% load static %}
+{% block content%}
+<style>
+	@import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+	 @import "https://use.fontawesome.com/releases/v5.5.0/css/all.css";
+
+    body,
+    html {
+        height: 100%;
+        text-align: center;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
+    }
+
+    * {
+        margin: 0;
+        box-sizing: border-box;
+
+    }
+
+    div.background {
+        filter: blur(4px);
+        height: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: -10px;
+        width: calc(100% + 20px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('/static/images/bg-01.jpg');
+        
+    }
+
+    div.background::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.6);
+    }
+
+    div.content {
+		width: 500px;
+		height:770px;
+        border: 5px solid white;
+        padding: 50px;
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+.login-box{
+  width: 300px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  color: none;
+}
+.login-box h1{
+  float: left;
+  font-size: 40px;
+  border-bottom: 6px solid #4caf50;
+  margin-bottom: 50px;
+  padding: 13px 0;
+}
+.textbox{
+  width: 100%;
+  overflow: hidden;
+  font-size: 20px;
+  padding: 8px 0;
+  margin: 8px 0;
+  border-bottom: 1px solid #4caf50;
+}
+.textbox i{
+  width: 26px;
+  float: left;
+  text-align: center;
+}
+.textbox input{
+  border: none;
+  outline: none;
+  background: none;
+  color: white;
+  font-size: 18px;
+  width: 80%;
+  float: left;
+  margin: 0 10px;
+}
+button {
+	margin: 30px 10px;
+	width: 200px;
+	padding: 12px;
+	font-size: 15px;
+	background-color: transparent;
+	color: white;
+	border: 1.5px white solid;
+	transition: 0.1s linear;
+}
+
+button:hover {
+	color: black;
+	background-color: white;
+	cursor: pointer;
+}
+
+</style>
+
+   
+    <div class="background"></div>
+    <div class="content">
+		<form class="login100-form validate-form" method="POST">
+			{% csrf_token %}
+			<div class="login-box">
+				<h1>Register</h1>
+				<div class="textbox">
+				  <i class="fas fa-user-circle"></i>
+				  {{form_reg.username}}
+				</div>
+			  
+				<div class="textbox">
+				  <i class="fas fa-envelope"></i>
+				  {{form_reg.email}}
+				</div>
+
+				<div class="textbox">
+					<i class="fas fa-lock"></i>
+					{{form_reg.password1}}
+				</div>
+
+				<div class="textbox">
+					<i class="fas fa-key"></i>
+					{{form_reg.password2}}
+				</div>
+				<input type="hidden" name="user" id="id_user">
+
+				<div class="textbox">
+					<i class="fas fa-graduation-cap"></i>
+					{{form_part_reg.college_name}}
+				</div>
+			  
+				<div class="textbox">
+					<i class="fas fa-mobile"></i>
+					{{form_part_reg.phone_no}}
+				</div>
+				<div class="textbox">
+					<i class="fas fa-th-large"></i>
+					{{form_part_reg.quiz_name}}
+				</div>
+				<div class="textbox">
+					<i class="fas fa-users"></i>
+					{{form_part_reg.team_name}}
+				</div>
+				<button type="submit"  value="Sign Up">Sign Up</button>
+				<div>
+				<a href="{% url 'login'%}">Already registered?</a>
+				</div>
+			  </div>
+		</form>
+	
+	
+    </div>
+   
+	
+ 
+    
+    {% endblock content %}
+
+ 

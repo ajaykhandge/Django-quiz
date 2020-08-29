@@ -1,0 +1,101 @@
+{% extends 'quiz/base.html'%}
+{% block content %}
+<style>
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:400&display=swap');
+
+    body,
+    html {
+        height: 100%;
+        text-align: center;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        overflow: hidden;
+    }
+
+    * {
+        margin: 0;
+        box-sizing: border-box;
+
+    }
+
+    div.background {
+        filter: blur(4px);
+        height: calc(100% + 20px);
+        margin-left: -10px;
+        margin-top: -10px;
+        width: calc(100% + 20px);
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-image: url('/static/images/bg-01.jpg');
+        
+    }
+
+    div.background::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.5);
+    }
+
+    div.content {
+        
+        top: 50%;
+        left: 50%;
+        position: absolute;
+        transform: translate(-50%, -50%);
+    }
+
+    button {
+        margin: 30px 10px;
+        width: 200px;
+        padding: 12px;
+        font-size: 15px;
+        background-color: transparent;
+        color: white;
+        border: 1.5px white solid;
+        transition: 0.1s linear;
+    }
+
+    button:hover {
+        color: black;
+        background-color: white;
+        cursor: pointer;
+    }
+
+    p {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    div.rules{
+        text-align: left;
+        font-size: 20px;
+    }
+   
+
+  
+   
+</style>
+
+<div class="background"></div>
+<div class="content">
+<h1>Congratulations {{request.user }}!!!</h1><br>
+
+<div style="padding: 10px;">
+    <h4>You have successfully attempted the quiz.</h4>
+    <h4>Our team will reached out you soon..</h4>
+    <h5>PEACE OUT!!</h5>
+
+</div>
+
+
+      <div class="buttons">
+        <button onclick="location.href = '/login';">LOGIN </button>
+    </div>
+</div>
+ 
+{% endblock content %}
