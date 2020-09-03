@@ -18,5 +18,6 @@ class Participant(models.Model):
     phone_no = models.CharField(max_length=10,null=False,blank=False,unique=True)
     quiz_name = models.CharField(max_length = 40,choices=QUIZES_NAME,blank=False, null=False,default=QUIZES_NAME[0])
     team_name = models.CharField(max_length=40,blank=True, null=True)
+    quiz_status = models.BooleanField(default=False,blank=False, null=False)
     
  

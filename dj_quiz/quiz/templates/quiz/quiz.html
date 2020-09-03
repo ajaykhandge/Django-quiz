@@ -179,6 +179,8 @@
 
     //wait till out jQuery is loaded.
 
+     
+
 
     document.getElementById('id_body').onload = function() {defer()};
     function defer()
@@ -222,16 +224,20 @@ var interval = setInterval(function() {
 
            
     
-    var count=11;
+    var count=21;
  
 
     function get_question(value=1)
     {
+
         id = parseInt(document.getElementById('quest_id').value);
+
+        console.log(id)
         if (value==1 && id!=count)
         {
             id=id+1;
             document.getElementById('quest_id').value=id;
+            console.log(document.getElementById('quest_id').value)
             
         }
         else if(value==-1 && id!=1)
@@ -265,42 +271,49 @@ var interval = setInterval(function() {
            success:function(reponse){
              
                //handling the reponse 
-               
+               console.log(reponse)
+ 
                instance = JSON.parse(reponse["instance"]); 
                question = JSON.parse(reponse['question']);
               // user_ans = JSON.parse(reponse['user_ans']);
-
-                
-               
                var fields = instance[0]["fields"];  
-               var quest_fields = question[0]["fields"];
-               var user_ans = reponse.user_ans;
-
                 
-               set_question(fields,quest_fields,user_ans);
+               var quest_fields = question[0]["fields"];
+               console.log(fields.question)
+               var user_ans = reponse.user_ans;
+               var quest_num  = reponse.question_number;
+                                
+               set_question(fields,quest_fields,user_ans,quest_num);
+               console.log(document.getElementById('quest_id').value)
+               console.log(document.getElementById('quest_primary_key').value)
               
            },
            error:function(reponse)
            {
-            alert(reponse.error);
+             alert('This is last question');
            },
 
 
 
        })
+
+        
     
         
        
     }
+
+     
     
    
     
 
-    function set_question(fields,quest_fields,user_ans)
+    function set_question(fields,quest_fields,user_ans,quest_num)
     {
-     
-        $('#question_marks').text(fields.quest_marks)
-        $('#question_number').text(fields.question);    //sets the id now
+         
+        document.getElementById('quest_primary_key').value = fields.question;
+        $('#question_marks').text(fields.quest_marks);
+        $('#question_number').text(quest_num);     
         $('#question').text(quest_fields.quest_statement);
         $('label[for=option_a]').text(fields.option_a)
         $('label[for=option_b]').text(fields.option_b)
@@ -352,6 +365,8 @@ var interval = setInterval(function() {
      //takes care of checking the answer
      selected_option=$('input[name=question-1-answers]:checked').val();   //gets the checed radio button
      current_question_id = parseInt(document.getElementById('quest_id').value);
+     current_question_primary_key = parseInt(document.getElementById('quest_primary_key').value);
+     
      
  
      //sending this info to server
@@ -364,12 +379,13 @@ var interval = setInterval(function() {
          data:
          {
              'selected_option':selected_option,
-             'current_question_id':current_question_id
+             'current_question_id':current_question_id,
+             'current_question_primary_key':current_question_primary_key
  
              
          },
          success:function(reponse){
-            
+            console.log(reponse)
              //handling the reponse 
             instance = JSON.parse(reponse["ans_instance"]); 
             question = JSON.parse(reponse['quest_instance']);
@@ -377,12 +393,27 @@ var interval = setInterval(function() {
             
             var fields = instance[0]["fields"];  
             var quest_fields = question[0]["fields"];
-            document.getElementById('quest_id').value=fields.question
-            set_question(fields,quest_fields,user_ans) 
+
+            var quest_num = reponse.question_number
+             
+        
+            document.getElementById('quest_id').value=quest_num
+            console.log(document.getElementById('quest_id').value)
+
+
+            if(!quest_num)
+            {
+                bootbox.alert({
+                    message: "This is the last question",
+                    className: 'rubberBand animated'
+                });
+
+            }
+            set_question(fields,quest_fields,user_ans,quest_num) 
          },
          error:function(reponse)
          {
-          alert(reponse.error);
+          alert('This is the last question!!!');
          },
  
  
@@ -403,7 +434,7 @@ var interval = setInterval(function() {
     <div class="no_and_marks">
              <div class="question_number">
                      <button type="button" class="btn btn-primary">
-                     Question <span class="badge badge-light" id="question_number">4</span>
+                     Question <span class="badge badge-light" id="question_number">1</span>
                      </button>
           
              </div>   
@@ -420,7 +451,8 @@ var interval = setInterval(function() {
             
         
          
-            <input type="text" name ="id" value="0" id="quest_id" hidden>
+            <input type="text" name ="id" value="{{quiz_id}}" id="quest_id" hidden>
+            <input type="text" name ="pri" value="1" id="quest_primary_key" hidden>
           
             <div class="radiobuttons">
             <input type="radio" name="question-1-answers" class="option_a" value="A" checked />
@@ -446,9 +478,9 @@ var interval = setInterval(function() {
    
            
         <div class="buttons">
-            <button   onclick="get_question(-1)"  value="previous">PREVIOUS</button>
-            <button type="submit" onclick="submit_question(event)"   value="Submit">SUBMIT</button>
-            <button   onclick="get_question(1)"   value="Next">NEXT</button>
+            <button   onclick="get_question(-1)"  id="btn_quest_number" value="previous">PREVIOUS</button>
+            <button type="submit" onclick="submit_question(event)" value="submit">SUBMIT</button>
+            <button   onclick="get_question(1)"  id="btn_quest_number" value="next">NEXT</button>
         </div>
 </div>
     

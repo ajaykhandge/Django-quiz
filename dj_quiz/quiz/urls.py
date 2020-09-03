@@ -8,7 +8,7 @@ from .views import index,welcome,quiz,quiz_question,check_question,thanks,leader
 urlpatterns = [
     path('index/',index,name="index"),
     path('welcome/',welcome,name='welcome'),
-    path('leaderboard/',leaderboard,name='leaderboard'),
+    path('leaderboard/<str:quiz_name>',leaderboard,name='leaderboard'),
     path('thanks/',thanks,name='thanks'),
     path('quiz/',quiz,name='quiz'),
      path('forbidden/',forbidden,name='forbidden'),
@@ -16,4 +16,4 @@ urlpatterns = [
     path('ajax/quiz/check_ans',check_question,name='check_questions'),
     
     
-]
+]   

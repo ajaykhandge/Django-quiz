@@ -19,10 +19,11 @@ from users import views as users_views
 from django.contrib.auth import views as auth_views
 from users.forms import CustomLoginForm
  
+ 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('register/', users_views.register,name="register"),
     path('login/', auth_views.LoginView.as_view(template_name='users/login.html',authentication_form=CustomLoginForm),name='login'),
-    path('logout/', auth_views.LogoutView.as_view(template_name='quiz/thanks.html'),name='logout'),
+    
     path('',include('quiz.urls'))
 ]

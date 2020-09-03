@@ -4,9 +4,12 @@ from .models import QuestionModel,AnswerModel,UserAnswerModel,QuizModel
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.contrib.auth.models import User
 from django.db.models import Count,Case,When,Value
+from users.models import Participant
  
 from django.core import serializers
 from django.contrib.auth import authenticate,logout
+
+import random
 
 # Create your views here.
 QUIZES_NAME = (
@@ -16,6 +19,13 @@ QUIZES_NAME = (
      
     
 )
+QUESTION_COUNT = 21
+
+COC_RANDOM_INDEXES =[]
+WEBER_RANDOM_INDEXES = []
+
+
+
 
 #view for welcome to quiz
 def index(request):
@@ -28,11 +38,11 @@ def index(request):
 @login_required
 def welcome(request):
     if request.user.is_superuser:
-        return redirect('/leaderboard')  
+        return redirect('/leaderboard/COC')  
         #current user is admin
     else: 
         #gets the current user and fetch its info
-        print(int(request.user.participant.phone_no))
+        
         #checking if the user attempted quiz or not
         try:
             current_user_quiz = QuizModel.objects.filter(user=request.user).exists()
@@ -52,15 +62,23 @@ def welcome(request):
     return render(request,'quiz/welcome.html')
 
 def check_question(request):
+    print('in-out')
     
     if request.is_ajax and request.method == 'POST':
+         
         #get the stuff
-        current_quest_id = int(request.POST.get('current_question_id'))
+        current_quest_id_index = int(request.POST.get('current_question_id'))
+        current_quest_id = int(request.POST.get('current_question_primary_key'))
+
+        print('primary_key',current_quest_id)
+        print('id',current_quest_id_index)   
         option_selected = request.POST.get('selected_option')
         
 
         current_quest_instance  = QuestionModel.objects.get(pk=current_quest_id)
         current_ans_instance  = AnswerModel.objects.get(question = current_quest_instance)
+
+        print(current_quest_instance)
 
         quest_ans_status = False
 
@@ -99,8 +117,25 @@ def check_question(request):
 
         #load the next question or current based on its position.
         
-        if current_quest_id != QuestionModel.objects.count():
-            next_quest_instance = QuestionModel.objects.get(pk=current_quest_id+1)
+        if current_quest_id_index != QUESTION_COUNT:
+
+            if(request.user.participant.quiz_name=="COC"):
+                quest_id = COC_RANDOM_INDEXES[current_quest_id_index]
+                question_number = COC_RANDOM_INDEXES.index(quest_id) + 1
+            elif (request.user.participant.quiz_name=="WEBER"):
+                quest_id = WEBER_RANDOM_INDEXES[current_quest_id_index-10]
+                question_number = WEBER_RANDOM_INDEXES.index(quest_id) + 1 
+
+
+                
+            print('current_id_index',current_quest_id_index)
+            print('quest_id',quest_id)
+            print(question_number)
+
+
+
+
+            next_quest_instance = QuestionModel.objects.get(pk=quest_id)
             next_ans_instance = AnswerModel.objects.get(question=next_quest_instance)
             try:
                 bool_user_ans =   UserAnswerModel.objects.filter(user=request.user,quest_id_user=next_ans_instance).exists()
@@ -140,7 +175,7 @@ def check_question(request):
 
              
         
-        return JsonResponse({'quest_instance':ser_next_quest_instance,'ans_instance':ser_next_ans_instance,'user_ans':user_ans_status})
+        return JsonResponse({'quest_instance':ser_next_quest_instance,'ans_instance':ser_next_ans_instance,'user_ans':user_ans_status,'question_number':question_number})
     
   
          
@@ -151,11 +186,20 @@ def check_question(request):
 def quiz_question(request):
 
     if request.is_ajax and request.method =='POST':
-        quest_id = int(request.POST.get('quest_id'))
-        print(quest_id)
+        quest_id_index = int(request.POST.get('quest_id'))    #gets the index of question id
+        #gets the question id
+        if(request.user.participant.quiz_name=="COC"):
+            quest_id = COC_RANDOM_INDEXES[quest_id_index-1]
+            print('id',quest_id_index,'rand_quest_id',quest_id)
+            question_number = COC_RANDOM_INDEXES.index(quest_id) + 1
+        elif (request.user.participant.quiz_name=="WEBER"):
+            quest_id = WEBER_RANDOM_INDEXES[quest_id_index-31]
+            question_number = WEBER_RANDOM_INDEXES.index(quest_id) + 1 
+        print(question_number)
+
 
         instance = QuestionModel.objects.get(pk=quest_id,quest_status=True,quest_category=request.user.participant.quiz_name)
-        print(instance)
+         
         option_model = AnswerModel.objects.get(question = instance)
         print(option_model.question)
 
@@ -180,7 +224,7 @@ def quiz_question(request):
 
 
          
-        return JsonResponse({'instance':ser_instance,'question':option_question,'user_ans':user_ans_status})
+        return JsonResponse({'instance':ser_instance,'question':option_question,'user_ans':user_ans_status,'question_number':question_number})
 
          
 def quiz_test(request):
@@ -205,33 +249,55 @@ def quiz_test(request):
 
 @login_required(redirect_field_name='welcome')
 def quiz(request):
+    quiz_name = request.user.participant.quiz_name
+    if quiz_name =="COC":
+        id =0
+        global COC_RANDOM_INDEXES
+        COC_RANDOM_INDEXES=random.sample(range(1,21),20)   #generate the random number list for each user
+        print(COC_RANDOM_INDEXES)
+         
+
+        
+    elif quiz_name =="WEBER":
+        id=30
+        global WEBER_RANDOM_INDEXES
+        WEBER_RANDOM_INDEXES=random.sample(range(31,51),20)   #generate the random number list for each user
+        print(WEBER_RANDOM_INDEXES)
+   
+    context = {
+       'quiz_id':id
+    }
+        
 
     #currently user is login and marking its quiz attempt as False
   
-    return render(request,'quiz/quiz.html')
+    return render(request,'quiz/quiz.html',context)
 
 
    
         
     
 
-
+@login_required
 def thanks(request):
-    user = request.user
+    user1 = str(request.user)
     
     #making the current user logined logout and quiz_attempted_status=Truu
     quiz_user = QuizModel.objects.get(user=request.user)
+    user_participant = Participant.objects.get(user=request.user)
+    user_participant.quiz_status =True
+    user_participant.save(force_update=True)
     quiz_user.user_quiz_attempted = True
     quiz_user.save(force_update=True)
   
 
     logout(request)
      
-    print(request.user)
+   
 
 
     context={
-        'message':f'Congratulations!!!{user }. You have successfully attempted the QUIZ Round'
+        'user':user1
          
     
     }
@@ -240,7 +306,7 @@ def thanks(request):
 
 
 @user_passes_test(lambda u: u.is_superuser)
-def leaderboard(request):
+def leaderboard(request,quiz_name):
 
     list_users = []
 
@@ -265,12 +331,24 @@ def leaderboard(request):
          })
         '''
     #getting the score to leaderboard
-    all_quiz_users = QuizModel.objects.all().order_by('-user_quiz_score')
+    print(quiz_name)
+
+    if(quiz_name=="COC"):
+        all_quiz_users = QuizModel.objects.filter(user_quiz_name="COC").order_by('-user_quiz_score') 
+    elif(quiz_name=="WEBER"):
+        all_quiz_users = QuizModel.objects.filter(user_quiz_name="WEBER").order_by('-user_quiz_score') 
+    elif(quiz_name=="HOTKEYS"):
+         
+        all_quiz_users = QuizModel.objects.filter(user_quiz_name="HOTKEYS").order_by('-user_quiz_score') 
+    
+    
+      #sort by descending order
 
 
 
     context ={
-             'list':all_quiz_users
+             'list':all_quiz_users,
+             "quiz_name":quiz_name
          }
     
     print(list_users)

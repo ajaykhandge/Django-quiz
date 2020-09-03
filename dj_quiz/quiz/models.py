@@ -21,9 +21,13 @@ class QuizModel(models.Model):
         return f'{self.user}{self.user_quiz_name}'
 
 
-
+'''
+COC ==>1-10;
+WEBER==>11-20;
+HOTKEYS==>21-30;
+'''
 class QuestionModel(models.Model):
-    quest_id = models.AutoField(primary_key=True,unique=True,blank=False,null=False)
+    quest_id = models.IntegerField(primary_key=True,unique=True,blank=False,null=False)
     quest_statement = models.CharField(max_length=200,blank=False, null=False)
     quest_status = models.BooleanField(default=True,null=False)   #to be included in the app/not
     quest_category = models.CharField(max_length=100,default='COC',blank =False,null=False,choices=QUIZES_NAME,help_text='question to selected based on the quiz name')
