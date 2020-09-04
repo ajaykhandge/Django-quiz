@@ -6,7 +6,7 @@ from .views import index,welcome,quiz,quiz_question,check_question,thanks,leader
 
 
 urlpatterns = [
-    path('index/',index,name="index"),
+    path('',index,name="index"),
     path('welcome/',welcome,name='welcome'),
     path('leaderboard/<str:quiz_name>',leaderboard,name='leaderboard'),
     path('thanks/',thanks,name='thanks'),

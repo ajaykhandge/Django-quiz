@@ -225,7 +225,8 @@ def quiz_question(request):
 
          
         return JsonResponse({'instance':ser_instance,'question':option_question,'user_ans':user_ans_status,'question_number':question_number})
-
+    else:
+        return render(request,'quiz/forbidden.html')
          
 def quiz_test(request):
     try:
