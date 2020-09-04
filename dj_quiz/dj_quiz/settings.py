@@ -26,7 +26,7 @@ SECRET_KEY = 'mvaaez_xfsmbl%$$@eakw=3-9!^b4c8=#4-@37($^8_@h)0)p*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com']
+ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com','localhost']
 
 
 # Application definition
@@ -45,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
