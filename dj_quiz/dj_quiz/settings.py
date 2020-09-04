@@ -26,7 +26,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'mvaaez_xfsmbl%$$@eakw=3-9!^b4c8=#4-@37($^8_@h)0)p*'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com','localhost', '127.0.0.1','0.0.0.0']
 
