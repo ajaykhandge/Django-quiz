@@ -1,0 +1,1 @@
+web: gunicorn dj_quiz.wsgi 
