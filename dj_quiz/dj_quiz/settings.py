@@ -26,7 +26,7 @@ SECRET_KEY = 'mvaaez_xfsmbl%$$@eakw=3-9!^b4c8=#4-@37($^8_@h)0)p*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com/','localhost']
+ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com','localhost']
 
 
 # Application definition
