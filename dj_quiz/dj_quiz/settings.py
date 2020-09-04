@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import django_heroku
+import dj_database_url
  
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -27,7 +28,7 @@ SECRET_KEY = 'mvaaez_xfsmbl%$$@eakw=3-9!^b4c8=#4-@37($^8_@h)0)p*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com']
+ALLOWED_HOSTS = ['dj-quiz-app.herokuapp.com','localhost', '127.0.0.1',]
 
 
 # Application definition
@@ -88,6 +89,9 @@ DATABASES = {
         'HOST':'localhost',
     }
 }
+
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
 
 # Password validation
