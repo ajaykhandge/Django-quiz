@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django_heroku
  
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -138,6 +139,8 @@ AUTH_USER_EMAIL_UNIQUE = True
 LOGIN_REDIRECT_URL = '/welcome'
 LOGIN_URL = '/login'
 LOGOUT_REDIRECT_URL = '/thanks'
+
+django_heroku.settings(locals())
 
  
 
