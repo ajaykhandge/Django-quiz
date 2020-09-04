@@ -232,12 +232,12 @@ var interval = setInterval(function() {
 
         id = parseInt(document.getElementById('quest_id').value);
 
-        console.log(id)
+        
         if (value==1 && id!=count)
         {
             id=id+1;
             document.getElementById('quest_id').value=id;
-            console.log(document.getElementById('quest_id').value)
+            
             
         }
         else if(value==-1 && id!=1)
@@ -271,7 +271,7 @@ var interval = setInterval(function() {
            success:function(reponse){
              
                //handling the reponse 
-               console.log(reponse)
+                
  
                instance = JSON.parse(reponse["instance"]); 
                question = JSON.parse(reponse['question']);
@@ -279,13 +279,12 @@ var interval = setInterval(function() {
                var fields = instance[0]["fields"];  
                 
                var quest_fields = question[0]["fields"];
-               console.log(fields.question)
+                
                var user_ans = reponse.user_ans;
                var quest_num  = reponse.question_number;
                                 
                set_question(fields,quest_fields,user_ans,quest_num);
-               console.log(document.getElementById('quest_id').value)
-               console.log(document.getElementById('quest_primary_key').value)
+              
               
            },
            error:function(reponse)
@@ -322,7 +321,7 @@ var interval = setInterval(function() {
 
         if(user_ans.attempted)
         {
-            console.log(typeof(user_ans.option_selected))
+             
             if(user_ans.option_selected=="a")
             {
                 $('.option_a').prop("checked",true);
@@ -385,7 +384,7 @@ var interval = setInterval(function() {
              
          },
          success:function(reponse){
-            console.log(reponse)
+             
              //handling the reponse 
             instance = JSON.parse(reponse["ans_instance"]); 
             question = JSON.parse(reponse['quest_instance']);
@@ -398,7 +397,7 @@ var interval = setInterval(function() {
              
         
             document.getElementById('quest_id').value=quest_num
-            console.log(document.getElementById('quest_id').value)
+            
 
 
             if(!quest_num)
