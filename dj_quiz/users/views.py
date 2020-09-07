@@ -22,7 +22,7 @@ def register(request):
             instance.user = user
             instance.save()
 
-            messages.success(request, f' Registeration Sucess..!\n LOGIN NOW')
+            messages.success(request, f' Registeration Sucess..!  LOGIN NOW')
             #redirect
             return redirect('login')
         else:
