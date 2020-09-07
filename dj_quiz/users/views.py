@@ -2,6 +2,7 @@ from django.shortcuts import render,redirect
 from .forms import RegisterForm,ParticipantRegForm
 from .models import Participant
 from django.contrib.auth.models import User
+from django.contrib import messages
 
 
 # Create your views here. for the app USers
@@ -21,10 +22,14 @@ def register(request):
             instance.user = user
             instance.save()
 
+            messages.success(request, f' Registeration Sucess..!\n LOGIN NOW')
             #redirect
             return redirect('login')
         else:
-            print('forms errors')
+            print(form_reg.errors)
+            print(form_part_reg.errors)
+            messages.error(request,f'{form_reg.errors}')
+            
 
             
             

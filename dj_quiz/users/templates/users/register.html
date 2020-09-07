@@ -106,13 +106,50 @@ button {
 button:hover {
 	color: black;
 	background-color: white;
-	cursor: pointer;
+  cursor: pointer;
+  
+  
+}
+ul{
+  list-style-type: none;
+}
+div.messages{
+  position: absolute;
+  top:0.2%;
+  align-content: center;
+  text-align: center;
+  left: 32%;
+  height: 25px;
+  font-size: 15px;
+ 
+  
+ 
+ 
+  
+  
 }
 
-</style>
 
+</style>
+ 
    
     <div class="background"></div>
+    
+   
+    <div  class="messages">
+       
+       
+          {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{message.tags}}">
+              <b>
+              {{message|safe}}
+              </b>
+            </div>
+          {% endfor %}
+          {% endif %}
+    </div>
+ 
     <div class="content">
 		<form class="login100-form validate-form" method="POST">
 			{% csrf_token %}

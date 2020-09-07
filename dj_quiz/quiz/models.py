@@ -33,7 +33,7 @@ class QuestionModel(models.Model):
     quest_category = models.CharField(max_length=100,default='COC',blank =False,null=False,choices=QUIZES_NAME,help_text='question to selected based on the quiz name')
 
     def __str__(self):
-        return self.quest_statement
+        return f'{self.quest_category}({self.quest_id})'
 
 class AnswerModel(models.Model):   #questions model only for all quizzes
     question = models.ForeignKey(QuestionModel,on_delete=models.CASCADE)
@@ -45,7 +45,7 @@ class AnswerModel(models.Model):   #questions model only for all quizzes
     quest_marks = models.IntegerField(default=1,null=False,blank=False)
 
     def __str__(self):
-        return self.question.quest_statement
+        return f'{self.question.quest_category}({self.question.quest_id})'
 
 class UserAnswerModel(models.Model):
     user  = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -55,6 +55,6 @@ class UserAnswerModel(models.Model):
     user_quest_attempted = models.BooleanField(default=False,blank=True,null=True)
 
     def __str__(self):
-        return str(self.quest_id_user.question)
+        return f'{self.user}{self.user.participant.quiz_name}({self.quest_id_user.question.quest_id})'
 
  

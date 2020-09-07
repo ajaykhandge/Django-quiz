@@ -158,6 +158,16 @@
 
     }
 
+    div.messages{
+        position: absolute;
+        top:15%;
+        align-content: center;
+        text-align: center;
+        left: 40%;
+        
+        
+    }
+
 
      
 
@@ -251,10 +261,6 @@ var interval = setInterval(function() {
             id=id;
         }
         
-        
-     
-        
-       
      
        $.ajax({
            type : 'POST',
@@ -282,14 +288,16 @@ var interval = setInterval(function() {
                 
                var user_ans = reponse.user_ans;
                var quest_num  = reponse.question_number;
-                                
+
+                
+                            
                set_question(fields,quest_fields,user_ans,quest_num);
               
               
            },
            error:function(reponse)
            {
-             alert('This is last question');
+             
            },
 
 
@@ -309,6 +317,23 @@ var interval = setInterval(function() {
 
     function set_question(fields,quest_fields,user_ans,quest_num)
     {
+        var btn_previous =  document.getElementById('btn_previous');
+        var btn_next =  document.getElementById('btn_next');
+
+        if (quest_num==1)
+        {
+          btn_previous.disabled=true;
+        }
+        else if (quest_num ==20)
+        {
+            btn_next.disabled=true
+        }
+        else
+        {
+           btn_next.disabled=false;
+            btn_previous.disabled=false;
+
+        }
          
         document.getElementById('quest_primary_key').value = fields.question;
         $('#question_marks').text(fields.quest_marks);
@@ -343,6 +368,8 @@ var interval = setInterval(function() {
             $('.option_a').prop("checked",true);
 
         }
+        if(quest_num==20)
+        alert('This is the last question!!!')
         
 
     }
@@ -394,9 +421,10 @@ var interval = setInterval(function() {
             var quest_fields = question[0]["fields"];
 
             var quest_num = reponse.question_number
+             document.getElementById('quest_id').value = current_question_id +1;
              
         
-            document.getElementById('quest_id').value=quest_num
+            
             
 
 
@@ -408,11 +436,13 @@ var interval = setInterval(function() {
                 });
 
             }
+          
+                             
             set_question(fields,quest_fields,user_ans,quest_num) 
          },
          error:function(reponse)
          {
-          alert('This is the last question!!!');
+           
          },
  
  
@@ -425,6 +455,16 @@ var interval = setInterval(function() {
  
 <!--A form for Question Loading and rettutning ans-->
 <div class="background"></div>
+<div class="messages">
+    {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-{{message.tags}}">
+        {{message}}
+      </div>
+    {% endfor %}
+    {% endif %}
+     
+  </div>
 
 <div class="content">
     <div class="question">
@@ -477,9 +517,9 @@ var interval = setInterval(function() {
    
            
         <div class="buttons">
-            <button   onclick="get_question(-1)"  id="btn_quest_number" value="previous">PREVIOUS</button>
+            <button   onclick="get_question(-1)"  id="btn_previous" value="previous">PREVIOUS</button>
             <button type="submit" onclick="submit_question(event)" value="submit">SUBMIT</button>
-            <button   onclick="get_question(1)"  id="btn_quest_number" value="next">NEXT</button>
+            <button   onclick="get_question(1)"  id="btn_next" value="next">NEXT</button>
         </div>
 </div>
     

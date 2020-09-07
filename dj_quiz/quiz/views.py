@@ -8,6 +8,7 @@ from users.models import Participant
  
 from django.core import serializers
 from django.contrib.auth import authenticate,logout
+from django.contrib import messages
 
 import random
 
@@ -23,6 +24,7 @@ QUESTION_COUNT = 21
 
 COC_RANDOM_INDEXES =[]
 WEBER_RANDOM_INDEXES = []
+HOTKEYS_RANDOM_INDEXES = []
 
 
 
@@ -78,7 +80,7 @@ def check_question(request):
         current_quest_instance  = QuestionModel.objects.get(pk=current_quest_id)
         current_ans_instance  = AnswerModel.objects.get(question = current_quest_instance)
 
-        print(current_quest_instance)
+       
 
         quest_ans_status = False
 
@@ -117,24 +119,20 @@ def check_question(request):
 
         #load the next question or current based on its position.
         
-        if current_quest_id_index != QUESTION_COUNT:
+        if request.user.participant.quiz_name=="COC" and current_quest_id_index >0 or request.user.participant.quiz_name=="WEBER" and current_quest_id_index >=31 or request.user.participant.quiz_name=="HOTKEYS" and current_quest_id_index >=51:
 
             if(request.user.participant.quiz_name=="COC"):
                 quest_id = COC_RANDOM_INDEXES[current_quest_id_index]
                 question_number = COC_RANDOM_INDEXES.index(quest_id) + 1
             elif (request.user.participant.quiz_name=="WEBER"):
-                quest_id = WEBER_RANDOM_INDEXES[current_quest_id_index-10]
+                quest_id = WEBER_RANDOM_INDEXES[current_quest_id_index+1-31]
                 question_number = WEBER_RANDOM_INDEXES.index(quest_id) + 1 
+            elif (request.user.participant.quiz_name=="HOTKEYS"):
+                quest_id = HOTKEYS_RANDOM_INDEXES[current_quest_id_index+1-51]
+                question_number = HOTKEYS_RANDOM_INDEXES.index(quest_id) + 1 
 
 
-                
-            print('current_id_index',current_quest_id_index)
-            print('quest_id',quest_id)
-            print(question_number)
-
-
-
-
+            print('new_quest_id',quest_id)
             next_quest_instance = QuestionModel.objects.get(pk=quest_id)
             next_ans_instance = AnswerModel.objects.get(question=next_quest_instance)
             try:
@@ -173,6 +171,7 @@ def check_question(request):
             ser_next_quest_instance = serializers.serialize('json',[current_quest_instance,])
             ser_next_ans_instance = serializers.serialize('json',[current_ans_instance])
 
+        
              
         
         return JsonResponse({'quest_instance':ser_next_quest_instance,'ans_instance':ser_next_ans_instance,'user_ans':user_ans_status,'question_number':question_number})
@@ -187,15 +186,27 @@ def quiz_question(request):
 
     if request.is_ajax and request.method =='POST':
         quest_id_index = int(request.POST.get('quest_id'))    #gets the index of question id
+       
+           
+        print('id_index',quest_id_index)
         #gets the question id
         if(request.user.participant.quiz_name=="COC"):
+            if quest_id_index<0:
+                return redirect(request,'quiz/quiz.html')
             quest_id = COC_RANDOM_INDEXES[quest_id_index-1]
-            print('id',quest_id_index,'rand_quest_id',quest_id)
             question_number = COC_RANDOM_INDEXES.index(quest_id) + 1
         elif (request.user.participant.quiz_name=="WEBER"):
+            if quest_id_index<31:
+                return redirect(request,'quiz/quiz.html')
             quest_id = WEBER_RANDOM_INDEXES[quest_id_index-31]
             question_number = WEBER_RANDOM_INDEXES.index(quest_id) + 1 
-        print(question_number)
+        elif (request.user.participant.quiz_name=="HOTKEYS"):
+            if quest_id_index<31:
+                return redirect(request,'quiz/quiz.html')
+            quest_id = HOTKEYS_RANDOM_INDEXES[quest_id_index-51]
+            question_number = HOTKEYS_RANDOM_INDEXES.index(quest_id) + 1 
+       
+       
 
 
         instance = QuestionModel.objects.get(pk=quest_id,quest_status=True,quest_category=request.user.participant.quiz_name)
@@ -223,22 +234,23 @@ def quiz_question(request):
         option_question = serializers.serialize('json',[instance])
 
 
+        
+
          
         return JsonResponse({'instance':ser_instance,'question':option_question,'user_ans':user_ans_status,'question_number':question_number})
     else:
         return render(request,'quiz/forbidden.html')
-         
-def quiz_test(request):
+
+#allows user to quiz only if the status is False.   
+def test_quiz(user):
     try:
 
-        current_user_quiz = QuizModel.objects.filter(user=request.user).exists()
+        current_user_quiz = QuizModel.objects.filter(user=user).exists()
         if(current_user_quiz):
-            user_quiz_model_instance = QuizModel.objects.get(user=request.user)
+            user_quiz_model_instance = QuizModel.objects.get(user=user)
             if user_quiz_model_instance.user_quiz_attempted:
-                print('False')
                 return False
             else:
-                print('True')
                 return True
         else:
             return True
@@ -248,6 +260,8 @@ def quiz_test(request):
         pass
 
 
+
+@user_passes_test(test_quiz,login_url='forbidden')
 @login_required(redirect_field_name='welcome')
 def quiz(request):
     quiz_name = request.user.participant.quiz_name
@@ -264,10 +278,20 @@ def quiz(request):
         global WEBER_RANDOM_INDEXES
         WEBER_RANDOM_INDEXES=random.sample(range(31,51),20)   #generate the random number list for each user
         print(WEBER_RANDOM_INDEXES)
+    
+    elif quiz_name =="HOTKEYS":
+        id=50
+        global HOTKEYS_RANDOM_INDEXES
+        HOTKEYS_RANDOM_INDEXES=random.sample(range(51,71),20)   #generate the random number list for each user
+        print(WEBER_RANDOM_INDEXES)
+
+
+    
    
     context = {
        'quiz_id':id
     }
+    
         
 
     #currently user is login and marking its quiz attempt as False
