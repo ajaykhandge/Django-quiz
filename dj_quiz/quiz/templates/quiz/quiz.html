@@ -42,14 +42,13 @@
     }
 
     div.content {
-        border: 5px solid white;
+     
         top: 50%;
         left: 50%;
         position: absolute;
         transform: translate(-50%, -50%);
-        padding: 25px;
-        width: 1000px;
-        height:450px;
+        padding: 10px;
+        
         
     }
 
@@ -81,9 +80,13 @@
     }
 
     div.question {
-        margin-left: 25px;
+        border: 5px solid white;
         float: none;
         clear: none;
+        padding: 10px 40px;
+        width: 950px;
+        height: 450px;
+       
        
        
     }
@@ -92,6 +95,7 @@
     div.buttons {
     
         text-align: center;
+       
          
     }
 
@@ -105,6 +109,7 @@
     
     input[type=radio],
     input.radio {
+    
       float: left;
       clear: none;
       margin: 2px 0 0 2px;
@@ -158,16 +163,7 @@
 
     }
 
-    div.messages{
-        position: absolute;
-        top:15%;
-        align-content: center;
-        text-align: center;
-        left: 40%;
-        
-        
-    }
-
+    
 
      
 
@@ -455,16 +451,7 @@ var interval = setInterval(function() {
  
 <!--A form for Question Loading and rettutning ans-->
 <div class="background"></div>
-<div class="messages">
-    {% if messages %}
-    {% for message in messages %}
-      <div class="alert alert-{{message.tags}}">
-        {{message}}
-      </div>
-    {% endfor %}
-    {% endif %}
-     
-  </div>
+ 
 
 <div class="content">
     <div class="question">
@@ -486,7 +473,7 @@ var interval = setInterval(function() {
     </div>
         
           
-          <h4 id="question">What is full form of CSS ?</h4>
+          <h5 id="question">What is full form of CSS ?</h5>
             
         
          
@@ -513,7 +500,7 @@ var interval = setInterval(function() {
             <label for="option_d">  Computer Styled Sections </label><br>
             </div>
         </form>
-    </div>
+   
    
            
         <div class="buttons">
@@ -521,6 +508,7 @@ var interval = setInterval(function() {
             <button type="submit" onclick="submit_question(event)" value="submit">SUBMIT</button>
             <button   onclick="get_question(1)"  id="btn_next" value="next">NEXT</button>
         </div>
+    </div>
 </div>
     
 

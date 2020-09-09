@@ -8,7 +8,7 @@ from users.models import Participant
  
 from django.core import serializers
 from django.contrib.auth import authenticate,logout
-from django.contrib import messages
+ 
 
 import random
 
@@ -95,14 +95,36 @@ def check_question(request):
             inst = UserAnswerModel.objects.get(user=request.user,quest_id_user=current_ans_instance)
             user_ans_model_instance = UserAnswerModel(user=request.user,quest_id_user=current_ans_instance,user_ans=option_selected.lower(),user_correct_ans=quest_ans_status,user_quest_attempted=True)
             user_ans_model_instance.id = inst.id
+            previous_ans_status = inst.user_correct_ans
             user_ans_model_instance.save(force_update=True)
+
+
             quiz_model_instance = QuizModel.objects.get(user=request.user)
 
-            if(quest_ans_status):
+
+            if previous_ans_status:
+                if quest_ans_status:
+                    pass
+                else:
+                    quiz_model_instance.user_quiz_score-=current_ans_instance.quest_marks
+            else:
+                if quest_ans_status:
+                    quiz_model_instance.user_quiz_score+=current_ans_instance.quest_marks
+                else:
+                    pass
+            quiz_model_instance.save()
+
+
+
+
+
+
+
+            '''if(quest_ans_status):
                 quiz_model_instance.user_quiz_score+=current_ans_instance.quest_marks
             else:
                 quiz_model_instance.user_quiz_score-=current_ans_instance.quest_marks
-            quiz_model_instance.save()
+            quiz_model_instance.save()'''
 
             #updates the score of user
              
@@ -310,7 +332,7 @@ def thanks(request):
     #making the current user logined logout and quiz_attempted_status=Truu
     quiz_user = QuizModel.objects.get(user=request.user)
     user_participant = Participant.objects.get(user=request.user)
-    user_participant.quiz_status =True
+    user_participant.quiz_status =quiz_user.user_quiz_attempted
     user_participant.save(force_update=True)
     quiz_user.user_quiz_attempted = True
     quiz_user.save(force_update=True)
